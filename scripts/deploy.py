@@ -34,18 +34,28 @@ def deploy(environment):
     # Install dependencies
     print("Installing dependencies...")
     if os.name == 'nt':  # Windows
-        pip_path = f"{deploy_path}/venv/Scripts/pip"
+        pip_path = f"{deploy_path}/venv/Scripts/python"
+        pip_exe = f"{deploy_path}/venv/Scripts/pip"
     else:  # Unix
-        pip_path = f"{deploy_path}/venv/bin/pip"
+        pip_path = f"{deploy_path}/venv/bin/python"
+        pip_exe = f"{deploy_path}/venv/bin/pip"
     
-    subprocess.run([pip_path, "install", "-r", "requirements.txt"], check=True)
+    # Update pip first
+    print("Updating pip...")
+    subprocess.run([pip_path, "-m", "pip", "install", "--upgrade", "pip"], check=True)
+    
+    # Then install requirements
+    print("Installing project dependencies...")
+    subprocess.run([pip_exe, "install", "-r", "requirements.txt"], check=True)
     
     return deploy_path
 
 def switch_environment(new_env_path):
-    if os.path.exists("deploy/current"):
-        os.unlink("deploy/current")
-    os.symlink(new_env_path, "deploy/current", target_is_directory=True)
+    current_path = "deploy/current"
+    if os.path.exists(current_path):
+        shutil.rmtree(current_path)
+    shutil.copytree(new_env_path, current_path)
+    print(f"Switched deployment to: {new_env_path}")
 
 def rollback():
     current = get_current_deployment()
