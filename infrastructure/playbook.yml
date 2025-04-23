@@ -1,0 +1,48 @@
+---
+- name: Configure Local Development Environment
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+
+  tasks:
+    - name: Create application directories
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ playbook_dir }}/../app"
+        - "{{ playbook_dir }}/../tests"
+        - "{{ playbook_dir }}/../scripts"
+
+    - name: Install Python packages
+      pip:
+        requirements: "{{ playbook_dir }}/../requirements.txt"
+        state: present
+        extra_args: --user
+
+    - name: Copy application files
+      copy:
+        src: "{{ playbook_dir }}/../{{ item.src }}"
+        dest: "{{ playbook_dir }}/../{{ item.dest }}"
+        mode: '0644'
+      loop:
+        - { src: 'app/app.py', dest: 'app/app.py' }
+        - { src: 'tests/test_app.py', dest: 'tests/test_app.py' }
+        - { src: 'scripts/health_check.py', dest: 'scripts/health_check.py' }
+
+    - name: Create virtual environment
+      command: python -m venv venv
+      args:
+        chdir: "{{ playbook_dir }}/.."
+        creates: "{{ playbook_dir }}/../venv"
+
+    - name: Create deployment directories
+      file:
+        path: "{{ playbook_dir }}/../deploy/{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - 'blue'
+        - 'green'
+        - 'current' 
