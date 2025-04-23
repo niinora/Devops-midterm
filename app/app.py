@@ -87,5 +87,11 @@ def add_task():
 def get_tasks():
     return jsonify(tasks)
 
+@app.route('/task/<int:task_id>')
+def get_task(task_id):
+    if 0 <= task_id < len(tasks):
+        return jsonify({"task": tasks[task_id]})
+    return jsonify({"status": "error", "message": "Task not found"}), 404
+
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True)

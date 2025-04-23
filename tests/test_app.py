@@ -36,4 +36,21 @@ def test_get_tasks(client):
     response = client.get('/tasks')
     assert response.status_code == 200
     assert isinstance(response.json, list)
-    assert 'Test task' in response.json 
+    assert 'Test task' in response.json
+
+def test_get_task(client):
+    """Test getting a specific task by ID"""
+    # Add a task first
+    client.post('/add_task',
+                data=json.dumps({'task': 'Test task'}),
+                content_type='application/json')
+    
+    # Test getting the task
+    response = client.get('/task/0')
+    assert response.status_code == 200
+    assert response.json['task'] == 'Test task'
+
+    # Test invalid task ID
+    response = client.get('/task/999')
+    assert response.status_code == 404
+    assert response.json['status'] == 'error'
