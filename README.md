@@ -75,6 +75,8 @@ Basic health monitoring is implemented through:
 - Endpoint health checks
 - Application logs
 - Status monitoring script
+## Status Display
+- A `/status` route displays the latest health check result from `health_log.txt`.
 
 ## Documentation
 

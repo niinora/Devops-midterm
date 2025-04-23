@@ -93,30 +93,5 @@ def get_task(task_id):
         return jsonify({"task": tasks[task_id]})
     return jsonify({"status": "error", "message": "Task not found"}), 404
 
-@app.route('/status')
-def status():
-    try:
-        with open('health_log.txt', 'r') as f:
-            lines = f.readlines()
-            latest_status = lines[-1].strip() if lines else "No status available"
-    except FileNotFoundError:
-        latest_status = "No status available (health log not found)"
-    return f'''
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>App Status</title>
-        <style>
-            body {{ font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }}
-            .status {{ padding: 10px; border: 1px solid #ddd; }}
-        </style>
-    </head>
-    <body>
-        <h1>App Status</h1>
-        <div class="status">{latest_status}</div>
-    </body>
-    </html>
-    '''
-
 if __name__ == '__main__':
     app.run(debug=True)
