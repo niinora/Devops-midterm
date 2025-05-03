@@ -208,3 +208,6 @@ pytest tests/test_app.py -v
 ansible-playbook infrastructure/playbook.yml -i "localhost,"
 # run deployment
 python scripts/deploy.py
+# health check:
+python scripts/health_check.py
+hdskj
