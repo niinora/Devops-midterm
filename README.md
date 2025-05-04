@@ -201,3 +201,13 @@ python scripts/switch.py
 - **Screenshot 15** [Infrastructure as Code execution showing successful configuration tasks including Python installation, directory creation, and file copying.](screenshots/picture15.png)
 
 
+python app/app.py
+# test:
+pytest tests/test_app.py -v
+# run ansible:
+ansible-playbook infrastructure/playbook.yml -i "localhost,"
+# run deployment
+python scripts/deploy.py
+# health check:
+python scripts/health_check.py
+hdskj

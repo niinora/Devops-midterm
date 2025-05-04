@@ -2,6 +2,7 @@ import requests
 import time
 from datetime import datetime
 import sys
+import os
 
 def check_health(url="http://localhost:5000"):
     try:
@@ -22,14 +23,37 @@ def log_status(status, message):
 
 def main():
     print("Starting health check monitoring...")
-    while True:
-        status, message = check_health()
-        log_status(status, message)
+    
+    # Check if running in CI environment
+    is_ci = os.getenv('CI') == 'true'
+    
+    if is_ci:
+        # In CI, run once with retries
+        max_retries = 3
+        retry_delay = 5  # seconds
         
-        if not status:
-            sys.exit(1)
+        for attempt in range(max_retries):
+            status, message = check_health()
+            log_status(status, message)
             
-        time.sleep(60)  # Check every minute
+            if status:
+                sys.exit(0)  # Success
+                
+            if attempt < max_retries - 1:
+                print(f"Retrying in {retry_delay} seconds... (Attempt {attempt + 1}/{max_retries})")
+                time.sleep(retry_delay)
+        
+        sys.exit(1)  # Failed after all retries
+    else:
+        # Normal continuous monitoring mode
+        while True:
+            status, message = check_health()
+            log_status(status, message)
+            
+            if not status:
+                sys.exit(1)
+                
+            time.sleep(60)  # Check every minute
 
 if __name__ == "__main__":
     main() 

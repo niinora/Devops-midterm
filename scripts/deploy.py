@@ -20,6 +20,7 @@ def deploy(environment):
     
     # Create deployment directory if it doesn't exist
     os.makedirs(deploy_path, exist_ok=True)
+    raise Exception("Simulated error to test rollback")
     
     # Copy application files
     print(f"Copying files to {environment} environment...")
@@ -105,3 +106,4 @@ def main():
 
 if __name__ == "__main__":
     main() 
+    
